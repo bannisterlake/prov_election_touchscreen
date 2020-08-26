@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": 191,
+      "name": "Saskatchewan Party",
+      "nameShort": "SP",
+      "colour": "#23583f"
+    },
+    {
+      "id": 188,
+      "name": "New Democratic Party",
+      "nameShort": "NDP",
+      "colour": "#ef7600"
+    },
+    {
+      "id": 186,
+      "name": "Liberal Party",
+      "nameShort": "LIB",
+      "colour": "#b41d0f"
+    },
+    {
+      "id": 184,
+      "name": "Green Party",
+      "nameShort": "GRN",
+      "colour": "#3d9156"
+    },
+    {
+      "id": 190,
+      "name": "Progressive Conservative Party",
+      "nameShort": "PC",
+      "colour": "#2b6abc"
+    },
+    {
+      "id": 999,
+      "name": "Other",
+      "nameShort": "OTH",
+      "colour": "#595b5b"
+    }
+  ]
+}
