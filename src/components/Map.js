@@ -38,11 +38,11 @@ const Map = (props) => {
     const [zoomCenter, setZoomCenter] = useState({zoom: 12, center: [-105, 54]})
 
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         ReactTooltip.rebuild()
-    //     }, 1000);        
-    // }, [props.data])
+    useEffect(() => {
+        // setTimeout(() => {
+        //     ReactTooltip.rebuild()
+        // }, 1000);        
+    }, [props.data])
 
 
     const getZoom = (area) => {
@@ -74,8 +74,6 @@ const Map = (props) => {
     }
 
     const getFill = (geo) => {
-        // console.log(props.data)
-
         var fill = '#24323e'
 
         if (props.data) { 
@@ -91,9 +89,14 @@ const Map = (props) => {
                 if (partyInfo) {
                     fill = partyInfo.colour
                 }
-                else fill = '#595b5b'
+
+
+                else fill = '#24323e'
             }
         }
+
+        console.log(fill)
+
         return fill;
     }
     

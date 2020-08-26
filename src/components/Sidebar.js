@@ -111,7 +111,7 @@ const Sidebar = (props) => {
     const handleClick = (e) => {
         // props.setDefaultState();
         const geo = document.getElementById(e.currentTarget.value)
-        console.log(geo)
+        // console.log(geo)
 
         const center = geo.getAttribute('center').split(',')
         const centerFloat = [parseFloat(center[0]),parseFloat(center[1])]
@@ -160,8 +160,10 @@ const Sidebar = (props) => {
                     classNames="menu-primary"
                 >
                     <div className={"menu"}>
-                        <LocationButton handleClick={handleRegionSelect}>St. John's</LocationButton>
-                        <LocationButton handleClick={handleRegionSelect}>Halifax</LocationButton>
+                        <LocationButton handleClick={handleRegionSelect}>All</LocationButton>
+                        <LocationButton handleClick={handleRegionSelect}>Fredericton</LocationButton>
+                        <LocationButton handleClick={handleRegionSelect}>Moncton</LocationButton>
+                        <LocationButton handleClick={handleRegionSelect}>Saint John</LocationButton>
                         {/* <LocationButton onClick={handleClick} value={el.name} >{el.name}</LocationButton> */}
                         </div>
                 </CSSTransition>
@@ -191,8 +193,8 @@ const Sidebar = (props) => {
             </div>
 
             <div className={classes.yearContainer}>
-                <YearButton year="2020" clicked={props.year==='2020' ? 'true' : 'false'}>2020</YearButton>
-                <YearButton year="2018" clicked={props.year==='2018' ? 'true' : 'false'}>2018</YearButton>
+                <YearButton year="2020" onClick={()=>props.handleYear('2020')} clicked={props.year==='2020' ? 'true' : 'false'}>2020</YearButton>
+                <YearButton year="2018" onClick={()=>props.handleYear('2018')} clicked={props.year==='2018' ? 'true' : 'false'}>2018</YearButton>
             </div>
         </div>
     );

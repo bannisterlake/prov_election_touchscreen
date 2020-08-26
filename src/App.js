@@ -61,6 +61,7 @@ const App = () => {
 
 	const [EDSelected, setSelected] = useState('')
 	const [data, setData] = useState(null)
+	const [oldData, setOldData] = useState(null)
 	const [scale, setScale] = useState(1)
 	const [counter, setCounter] = useState(30)
 	const [year, toggleYear] = useState('2020')
@@ -75,6 +76,7 @@ const App = () => {
 	useEffect(()=>{
 		startTimer();
 		getData();
+		getStaticData();
 	},[])
 
 	const startTimer = () => {
@@ -92,7 +94,7 @@ const App = () => {
 	const getData = () => {
 		var prefix = process.env.NODE_ENV === 'development' ? './': "";
 
-		fetch(`${prefix}data/nb_fullresults.json`)
+		fetch(`${prefix}data/nb_full_2020.json`)
 			.then(res=>{
 				if (res.ok) {
 					return res.json();
@@ -100,6 +102,22 @@ const App = () => {
 			})
 			.then(json=>
 				setData(json)
+			)
+			.catch(err=>console.log(err))
+		
+	}
+
+	const getStaticData = () => {
+		var prefix = process.env.NODE_ENV === 'development' ? './': "";
+
+		fetch(`${prefix}data/nb_full_2018.json`)
+			.then(res=>{
+				if (res.ok) {
+					return res.json();
+				} 
+			})
+			.then(json=>
+				setOldData(json)
 			)
 			.catch(err=>console.log(err))
 		
@@ -112,14 +130,22 @@ const App = () => {
 			.then(json=>{
 				setPartyList(json.partyResults)
 			})
+			.catch(err=>console.log(err))
+		
 	}
-
 
 	const getSelectedData = (el) => {
 		console.log('setData', el)
-		var tempData = data.data.find(contest=>{
-			return contest.name === el
-		})
+		if (year === '2020') {
+			var tempData = data.data.find(contest=>{
+				return contest.name === el
+			})
+	
+		} else {
+			var tempData = oldData.data.find(contest=>{
+				return contest.name === el
+			})
+		} 
 		toggleModal(true)
 		setSelectedData(tempData)
 		
@@ -128,39 +154,13 @@ const App = () => {
 	}
 
 	const handleClick = (el, center, zoom) => {
-		// console.log("click", el, center,zoom)
+		console.log("click", el, center,zoom)
 
 		// toggleModal(true)
-
-		if (el !== '' && clickable) {
-			var oldSelectedList = document.getElementsByClassName('selected')
-			var oldPrevButtonList = document.getElementsByClassName('selectedPrev')
-			var newSelectedButton = document.getElementById(`button-${el}`)
-			var prevButton = newSelectedButton.previousSibling
-			
-			if (oldPrevButtonList.length>0) {
-				// console.log('remove', document.getElementsByClassName('selectedPrev'))
-				document.getElementsByClassName('selectedPrev')[0].classList.remove('selectedPrev')
-			}
-
-			if (oldSelectedList.length > 0) {
-				document.getElementsByClassName('selected')[0].classList.remove('selected')
-			}
-
-			newSelectedButton.classList.add('selected')
-
-			if (prevButton) {
-				prevButton.classList.add('selectedPrev')
-			}
 
 			setSelected(el)
 			setZoomCenter({zoom: zoom, center: center})
 			getSelectedData(el)
-		} 
-		else if (el === '' && clickable) {
-			setSelected(el)
-			setZoomCenter({zoom: zoom, center: center})
-		}
 
 	}
 
@@ -178,11 +178,14 @@ const App = () => {
 
 	}
 
+
 	const handlePanningStop = () => {
 		setTimeout(() => {
 			toggleClickable(true)
 		}, 100);
 	}
+
+
 
 
 	return (
@@ -211,17 +214,17 @@ const App = () => {
 							zoomCenter={zoomCenter} 
 							selected={EDSelected}
 							scale={scale} 
-							data={data} 
+							data={year === '2020' ? data: oldData} 
 							partyList={partyList}
 							handleClick={handleClick}/>
 						<Sidebar 
 							setDefaultState={setDefaultState}
-							data={data} 
+							data={year === '2020' ? data: oldData} 
 							year={year} 
 							valueList={data} 
 							value={EDSelected} 
-							handleClick={handleClick}/>
-							
+							handleClick={handleClick}
+							handleYear={(selectedYear)=>toggleYear(selectedYear)}	/>						
 					</>
 					)}
 				</TransformWrapper>

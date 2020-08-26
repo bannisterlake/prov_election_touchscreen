@@ -66,11 +66,14 @@ const Map = (props) => {
     }
 
     const handleClick = (el, center, zoom) => {
+
+        console.log(el, center, zoom)
+
         if (props.clickable) {
             props.setDefaultState();
         }
         props.handleClick(el, center,zoom)
-        // setZoomCenter({zoom: zoom, center: center})
+        // setZoomCenter/({zoom: zoom, center: center})
     }
 
     const getFill = (geo) => {
@@ -85,18 +88,20 @@ const Map = (props) => {
                 if (contest) {
                     if (contest.results.length > 0) {
                         var party = contest.results[0].partyCode
-                        console.log("here", contest)
                         var partyInfo = props.partyList.find(el=>{
                             return el.nameShort === party    
                         })
-                        if (partyInfo) {
-                            fill = partyInfo.colour
+
+                        if (partyInfo.color) {
+
+                            fill = partyInfo.color
                         }
                         else fill = '#595b5b'
                     }
                 }
             }
             return fill;
+
         } catch(e) {
             console.log("error getting fill")
             return fill;
@@ -114,7 +119,6 @@ const Map = (props) => {
                             {({geographies}) =>
                                 geographies.map(geo=>{
                                     const centroid = geoCentroid(geo);
-                                    const area = geoArea(geo); 
                                     const zoom = getZoom(geoArea(geo));
                                     const fill = getFill(geo.properties);
                                     var strokeWidth = 0.01

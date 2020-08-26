@@ -23,6 +23,7 @@ body {
 
 .ReactModal__Overlay {
 	background-color: transparent !important;
+	z-index: 25;
 }
 
 .left {
@@ -60,14 +61,14 @@ body {
 	border-bottom: 0.1px solid rgb(161,169,170); */
 }
 
-.test:before {
-    content: '';
+.test + .test:before {
+	content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     width: 90%;
     left: 5%;
     border-bottom: 1px solid grey;
-  }
+}
 
 .selected {
 	background-color: #131d27;

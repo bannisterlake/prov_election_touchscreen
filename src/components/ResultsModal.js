@@ -9,86 +9,6 @@ import ReactModal from 'react-modal'
 
 import CloseIcon from '@material-ui/icons/Close';
 
-const contestTest=  {
-    "sysId": 856,
-    "name": "Arm River",
-    "broadcastName": "",
-    "line1": "",
-    "line2": "",
-    "id": 1,
-    "pollsReported": 67,
-    "pollsTotal": 67,
-    "votes": 8352,
-    "isNew": true,
-    "modifiedDate": "2020-03-06T03:41:38Z",
-    "candidateShowCount": null,
-    "pollsClosingTime": null,
-    "isPollsClosed": null,
-    "pollsClosingTime24": null,
-    "results": [
-      {
-        "name": "Greg Brkich",
-        "partyId": 191,
-        "votes": 6128,
-        "percent": 73.4,
-        "isElected": true,
-        "isIncumbent": true,
-        "modifiedDate": "2020-03-06T03:41:38Z",
-        "partyDatafeedChar": "SP",
-        "partyCode": "SP",
-        "cachedHeadFilename": "BRKICH_Greg_SP_1.png"
-      },
-      {
-        "name": "Denise Leduc",
-        "partyId": 188,
-        "votes": 1424,
-        "percent": 17.0,
-        "isElected": false,
-        "isIncumbent": false,
-        "modifiedDate": "2020-03-06T03:41:38Z",
-        "partyDatafeedChar": "NDP",
-        "partyCode": "NDP",
-        "cachedHeadFilename": "LEDUC_Denise_NDP_1.png"
-      },
-      {
-        "name": "Raymond Carrick",
-        "partyId": 190,
-        "votes": 339,
-        "percent": 4.1,
-        "isElected": false,
-        "isIncumbent": false,
-        "modifiedDate": "2020-03-06T03:41:38Z",
-        "partyDatafeedChar": "PC",
-        "partyCode": "PC",
-        "cachedHeadFilename": "CARRICK_Raymond_PC_1.png"
-      },
-      {
-        "name": "Dale Dewar",
-        "partyId": 184,
-        "votes": 256,
-        "percent": 3.1,
-        "isElected": false,
-        "isIncumbent": false,
-        "modifiedDate": "2020-03-06T03:41:38Z",
-        "partyDatafeedChar": "GRN",
-        "partyCode": "GRN",
-        "cachedHeadFilename": "DEWAR_Dale_GRN_1.png"
-      },
-      {
-        "name": "Russ Collicott",
-        "partyId": 186,
-        "votes": 205,
-        "percent": 2.5,
-        "isElected": false,
-        "isIncumbent": false,
-        "modifiedDate": "2020-03-06T03:41:38Z",
-        "partyDatafeedChar": "LIB",
-        "partyCode": "LIB",
-        "cachedHeadFilename": "COLLICOTT_Russ_LIB_1.png"
-      }
-    ]
-  }
-
 const styles = makeStyles({
     modal: {
         display: 'flex',
@@ -105,7 +25,8 @@ const styles = makeStyles({
         backgroundColor: '#202b36',
         color: '#FFFFFF',
         fontSize: '20px',
-        zIndex: 20,
+        zIndex: 30,
+        overflowY: 'auto',
         outline: 'none',
         boxShadow: '2px 2px #1d1d1d81',
         '& div': {
@@ -237,15 +158,23 @@ const ResultsModal = (props) => {
         props.handleClose();
     }
 
-    const getPartyInfo = (id) => {
+    const getPartyInfo = (code) => {
+
+
+      try {
         let party = props.partyList.find(parties=>{
-            return parties.id === id
+            return parties.nameShort === code
         })
         if (!party) {
             party = props.partyList[props.partyList.length -1]
         }
         console.log(party)
         return party
+      } catch (e) {
+        console.log(e)
+      }
+      
+
     }
 
     var prefix = process.env.NODE_ENV === 'development' ? '../': "./";
@@ -262,11 +191,13 @@ const ResultsModal = (props) => {
             <div className={classes.modalBody}>
                 <div className={classes.modalTitle}>{props.data.name}</div>
                 <div className={classes.resultsContainer}>
+                  {console.log(props.data.results)}
                     {props.data.results.map((contest,i)=>{
-                        let partyDetails = getPartyInfo(contest.partyId);
+                        console.log(contest.partyCode)
+                        let partyDetails = getPartyInfo(contest.partyCode);
                         return (
                             <div key={i} className={classes.candidateContainer}>
-                                <div style={{backgroundColor: partyDetails.colour}} className={classes.imgDiv}><img src={`${prefix}img/headshot.png`}/></div>
+                                <div style={{backgroundColor: partyDetails.color}} className={classes.imgDiv}><img src={`${prefix}img/headshot.png`}/></div>
                                 <div className={classes.resultsDiv}>
                                     <div className={classes.candidateDiv}>
                                         <div id="candidateInfo" className={classes.candidateInfo}>
@@ -279,7 +210,7 @@ const ResultsModal = (props) => {
                                         </div>
                                     </div>
                                     <div className={classes.barContainer}>
-                                        <div style={{backgroundColor: partyDetails.colour, width: `${contest.percent}%`}} className={classes.innerBar} /> 
+                                        <div style={{backgroundColor: partyDetails.color, width: `${contest.percent}%`}} className={classes.innerBar} /> 
                                     </div>
                                 </div>
                             </div>
