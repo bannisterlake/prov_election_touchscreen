@@ -29,7 +29,7 @@ const styles = makeStyles({
         '& img': {
             height: 'auto',
             margin: 30,
-            maxWidth: '70%',
+            maxWidth: '95%',
         }
     },
     buttonContainer: {
