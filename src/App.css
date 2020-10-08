@@ -31,7 +31,7 @@ body {
 	flex: 3;
 	height:100%;
 	display: flex;
-	background-color: #20303f
+	background-color: #16212c
 
 }
 
@@ -102,10 +102,11 @@ body {
   }
 
 .menu {
-	position: absolute;
+	/* position: absolute; */
 	width: 100%;
 	display: flex;
 	overflow-y: scroll;
+	overflow-x: hidden;
 	flex-direction: column;
 	height: 100%;
   }

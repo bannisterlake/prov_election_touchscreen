@@ -10,6 +10,7 @@ import {CSSTransition} from 'react-transition-group'
 
 const styles = makeStyles({
     sidebarContainer: {
+        maxWidth: 500,
         flex: 2,
         height: '100%',
         display: 'flex',
@@ -19,16 +20,16 @@ const styles = makeStyles({
         overflow: 'hidden',
     },
     imgContainer: {
-        height: '150px',
-        padding: 30,
+        flex: 1,
         borderBottom: '3px solid #131d27',
         display: 'flex', 
         justifyContent: 'center',
         cursor: 'pointer',
         zIndex: 20,
         '& img': {
-            height: '150px',
-            width: 'auto'
+            height: 'auto',
+            margin: 30,
+            maxWidth: '70%',
         }
     },
     buttonContainer: {
@@ -36,8 +37,9 @@ const styles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         width: '100%', 
-        // overflow: 'hidden',
+        overflowX: 'hidden',
         zIndex: 10,
+        flex: 5,
         // height: '2500px';
         // // flex: 4, 
         // // position: 'relative',
@@ -49,10 +51,11 @@ const styles = makeStyles({
     },
     yearContainer: {
         display: 'flex',
-        height: '100px',
+        maxHeight: '100px',
         justifyContent: 'space-around',
-        position: 'absolute',
+        // position: 'absolute',
         bottom: '0',
+        flex: 1,
         width: '100%', 
         backgroundColor: '#202b36',
         zIndex: 21
@@ -62,8 +65,8 @@ const styles = makeStyles({
 
 const LocButton = styled(({ color, ...other }) => <Button {...other} />)({
     background: (props) =>
-      props.clicked === 'true'
-        ? '#20303f'
+      props.selected 
+        ? '#131e29'
         : 'transparent',
     border:'none',
     // borderBottom: '2px solid white',
@@ -106,7 +109,7 @@ const Sidebar = (props) => {
 
     const [menu, setMenu] = useState('region')
 
-    const classes = styles();
+    const classes = styles(props);
 
     const handleClick = (e) => {
         // props.setDefaultState();
@@ -121,20 +124,20 @@ const Sidebar = (props) => {
     const handleReset = () => {
         props.setDefaultState();
 
-        props.handleClick('', [-66, 45.9], 47)
+        props.handleClick('', props.config.center, props.config.zoom)
     }
 
 
     const LocationButton = (props) => {
+
+        // console.log(props.selected)
         return (
-            <div key={props.i} id={`button-${props.value}`}  className={`test`}>
-                    <LocButton
+            <div key={props.i} id={`button-${props.value}`} value={props.value} className={`test`}>
+                <LocButton
+                    selected={props.selected}
                     value={props.value}
-                // className={`${classes.LocationButton} menu-item`}
-                // onMouseEnter={()=>toggleArrow(props.resultId)}
-                // onMouseLeave={()=>toggleArrow(0)}
-                onClick={props.handleClick}
-            >
+                    onClick={props.handleClick}
+                >
                 {props.children}
                 </LocButton>
             </div>
@@ -142,16 +145,20 @@ const Sidebar = (props) => {
         )
     }
 
-    const handleRegionSelect = (props) => {
-        setMenu('locations')
-    }
+    const handleRegionSelect = (e) => {
+        let region = e.currentTarget.value
+        console.log('handleRegion', e)
+        setMenu('locations');
+        props.setDefaultState();
+        props.handleZoomRegion(region)
 
+    }
 
     var prefix = process.env.NODE_ENV === 'development' ? '../': "./"; 
 
     return (
         <div className={classes.sidebarContainer}>
-            <div className={classes.imgContainer} onClick={handleReset}><img src={`${prefix}/img/banner.png`} /></div>
+            <div className={classes.imgContainer} onClick={handleReset}><img src={`${prefix}img/${props.prov}_banner.png`} /></div>
             <div className={`${classes.buttonContainer}`}>
                 <CSSTransition
                     in={menu==="region"} 
@@ -160,12 +167,12 @@ const Sidebar = (props) => {
                     classNames="menu-primary"
                 >
                     <div className={"menu"}>
-                        <LocationButton handleClick={handleRegionSelect}>All</LocationButton>
-                        <LocationButton handleClick={handleRegionSelect}>Fredericton</LocationButton>
-                        <LocationButton handleClick={handleRegionSelect}>Moncton</LocationButton>
-                        <LocationButton handleClick={handleRegionSelect}>Saint John</LocationButton>
-                        {/* <LocationButton onClick={handleClick} value={el.name} >{el.name}</LocationButton> */}
-                        </div>
+                        <LocationButton value="" handleClick={handleRegionSelect}>All</LocationButton>
+                        {Object.keys(props.regionList).map(region=>{
+                            return <LocationButton value={region} handleClick={handleRegionSelect}>{region}</LocationButton>
+                        })}
+                        
+                    </div>
                 </CSSTransition>
                 <CSSTransition
                     in={menu==="locations"} 
@@ -176,14 +183,22 @@ const Sidebar = (props) => {
                     <div className={"menu"}>
 
                     <LocationButton handleClick={()=>setMenu('region')}>Back</LocationButton>
-                    {props.data && props.data.data.sort((a,b)=>{
+                    {props.data && props.data.data.filter((ed)=>{
+                        if (props.selectedRegion) {
+                            let index = props.regionList[props.selectedRegion].EDList.findIndex(el=>el === ed.name)
+                            if (index > -1) {
+                                return ed
+                            }
+                        } else return ed
+                    })
+                    .sort((a,b)=>{
                         if (a.name > b.name) {
                             return 1
                         } else return -1
                     })
                     .map((el,i)=>{
                         return (
-                                <LocationButton i={i} handleClick={handleClick} value={el.name} >{el.name}</LocationButton>
+                                <LocationButton i={i} handleClick={handleClick} selected={props.value === el.name} value={el.name} >{el.name}</LocationButton>
                         )
                     })
                     }

@@ -4,6 +4,8 @@ var webpack = require("webpack");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+// var Dotenv = require('dotenv-webpack');
+
 
 module.exports =(env, argv)=> ({
 	entry: { bundle: "./src/index.js" },
@@ -61,7 +63,7 @@ module.exports =(env, argv)=> ({
 							outputPath: 'img/',
 							publicPath: 'img/'
 						}
-					}
+					}, 
 				]
 			},
 			{
@@ -81,6 +83,9 @@ module.exports =(env, argv)=> ({
 	},
 
 	plugins: [
+		// new webpack.EnvironmentPlugin({
+		// 	PROV: env.PROV
+		// }),
 		new HtmlWebpackPlugin({
 			hash: true,
 			template: './src/index.html',
@@ -93,7 +98,28 @@ module.exports =(env, argv)=> ({
 				to: 'data/',
 				toType: 'dir',
 				context: 'src/data/'
-			}])
+			},
+			{
+				from: 'election.config.json',
+				to: '',
+				context: 'src/'
+			},
+			{
+				from: '*', 
+				to: 'img/',
+				context: 'src/img'
+			},
+			{
+				from: '*',
+				to: 'headshots/',
+				context: 'src/headshots'
+			},
+			{
+				from: '*.json',
+				to: '',
+				context: 'src/'
+			}
+		])
 
 	],
 	devServer: {

@@ -1,7 +1,10 @@
 node_modules
-build
 .vscode
 .vs
-dist
 .vs/electionwidget_2/v15/.suo
 .vs/slnx.sqlite
+src/old_data
+src/
+webpack.config.js
+package.json
+package-lock.json

@@ -1,4 +1,5 @@
 import React from 'react'
+import SwipeableViews from 'react-swipeable-views';
 
 import {
     makeStyles, 
@@ -8,8 +9,9 @@ import {
 import ReactModal from 'react-modal'
 
 import CloseIcon from '@material-ui/icons/Close';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 
-const styles = makeStyles({
+const styles = makeStyles(props=>({
     modal: {
         display: 'flex',
         flexDirection: 'column',
@@ -18,7 +20,7 @@ const styles = makeStyles({
         minHeight: 'fit-content',
         border: 'none',
         width: '80%',
-        maxWidth: '1000px',
+        maxWidth: '1200px',
         top: '10%',
         left: '10%',
         borderRadius: '15px',
@@ -29,10 +31,13 @@ const styles = makeStyles({
         overflowY: 'auto',
         outline: 'none',
         boxShadow: '2px 2px #1d1d1d81',
-        '& div': {
-            maxHeight: '100%'
-        }
+        
 
+      },
+      modalContainer: {
+        height: '1800px',
+        minHeight: '100%',
+        position: 'relative'
       },
       overlay: {
           backgroundColor: 'none',
@@ -47,9 +52,15 @@ const styles = makeStyles({
         backgroundColor: '#131d27',
         left: 5,
         top: 5,
+        zIndex: 20,
         '&:hover': {
             cursor: 'pointer'
         }
+      },
+      chartView: {
+        margin: 10,
+        display: 'flex',
+        justifyContent: 'center'
       },
       modalBody: {
           position: 'relative',
@@ -59,7 +70,7 @@ const styles = makeStyles({
           maxHeight: '100%',
       }, 
       modalTitle: {
-          padding: 15,
+          padding: 20,
           textAlign: 'center',
           fontSize: 36
       },
@@ -89,9 +100,12 @@ const styles = makeStyles({
         position: 'relative',
         backgroundColor: 'red',
         borderRadius: 5,
-        minWidth: 80,
-        width: 'auto',
+        minWidth: props=>props.year === '2020' && 80,
+        paddingLeft: props=>props.year !== '2020' && 10,
+        // width: 'auto',
         '& img': {
+            width: 0,
+            transition: 'width 200ms',
             height: '100%',
             marginLeft: 6,
             borderRadius: 5, 
@@ -128,7 +142,20 @@ const styles = makeStyles({
       },
       candidateName: {
         fontSize: 30,
+        display: 'flex',  
+        alignItems: 'baseline', 
+        '& #incumbent': {
+          fontSize: 14,
+          paddingLeft: 10,
+          fontStyle: 'italic'
+        },
+        '& #elected': {
+          position: 'absolute', 
+          right: 10,
+          bottom: -5
+        }
       },
+
       barContainer: {
           height: 6,
           backgroundColor: 'grey',
@@ -144,14 +171,14 @@ const styles = makeStyles({
           position: "relative",
           borderRadius: '6px 0px 0px 6px',
       }
-})
+}))
 
 
 ReactModal.setAppElement('#root')
 
 const ResultsModal = (props) => {
 
-    const classes = styles();
+    const classes = styles(props);
 
     const closeModal = () => {
         console.log('close')
@@ -159,16 +186,24 @@ const ResultsModal = (props) => {
     }
 
     const getPartyInfo = (code) => {
-
-
       try {
+        if (code === 'NDP') {
+          let party = {
+            "name": 'NDP', 
+            "color":"#DD6600"
+          }
+          return party 
+        }
         let party = props.partyList.find(parties=>{
             return parties.nameShort === code
         })
         if (!party) {
-            party = props.partyList[props.partyList.length -1]
+            party = {
+              "name": code,
+              "color": "rgb(192, 192, 192)"
+            }
+            // party = props.partyList[props.partyList.length -1]
         }
-        console.log(party)
         return party
       } catch (e) {
         console.log(e)
@@ -176,6 +211,19 @@ const ResultsModal = (props) => {
       
 
     }
+
+    const getHeadshot = (candidate) => {
+      const prefix = process.env.NODE_ENV === 'development' ? '../': './';
+
+        if (candidate) {
+          let headshotFile = `${prefix}headshots/${candidate.cachedHeadFilename.slice(0,-4)}.jpg`
+          return encodeURI(headshotFile);
+          
+        } else {
+          return `${prefix}img/no_headshot.png`
+        }
+    }
+
 
     var prefix = process.env.NODE_ENV === 'development' ? '../': "./";
 
@@ -187,22 +235,27 @@ const ResultsModal = (props) => {
           contentLabel="Example Modal"
         >
         {props.data && <div className={classes.modalContainer}>
-            <IconButton onClick={closeModal} ><CloseIcon className={classes.closeButton}/></IconButton>
+            <IconButton className={classes.closeButton} onClick={closeModal} ><CloseIcon /></IconButton>
             <div className={classes.modalBody}>
                 <div className={classes.modalTitle}>{props.data.name}</div>
+                <SwipeableViews> 
                 <div className={classes.resultsContainer}>
-                  {console.log(props.data.results)}
+                  {/* {console.log(props.data.results)} */}
                     {props.data.results.map((contest,i)=>{
-                        console.log(contest.partyCode)
+                        console.log(contest)
                         let partyDetails = getPartyInfo(contest.partyCode);
                         return (
                             <div key={i} className={classes.candidateContainer}>
-                                <div style={{backgroundColor: partyDetails.color}} className={classes.imgDiv}><img src={`${prefix}img/headshot.png`}/></div>
+                                <div style={{backgroundColor: partyDetails.color}} className={classes.imgDiv}>{props.year === '2020' && <img onLoad={e=>{console.log(e.target.style.width);e.target.style.width = '74px'}} onError={(e) => { e.target.onError = null; e.target.src = `${prefix}img/no_headshot.png` } } src={getHeadshot(contest)}/>}</div>
                                 <div className={classes.resultsDiv}>
                                     <div className={classes.candidateDiv}>
                                         <div id="candidateInfo" className={classes.candidateInfo}>
                                             <div className={classes.partyName}>{partyDetails.name}</div>
-                                            <div className={classes.candidateName}>{contest.name}</div>
+                                            <div className={classes.candidateName}> 
+                                              <div id="candidateName" >{contest.name}</div>
+                                              {contest.isIncumbent && <div id="incumbent">incumbent</div>}
+                                              {contest.isElected && <div id="elected"><CheckCircleIcon /></div>}
+                                            </div>
                                         </div>
                                         <div className={classes.voteInfo}>
                                             <div className={classes.votePercent}>{contest.percent}%</div>
@@ -218,6 +271,10 @@ const ResultsModal = (props) => {
                     })
                     }
                 </div>
+                <div className={classes.chartView}>
+                  <img src="https://elector.blcloud.net/api/chart/VotePollPercent/?ridingID=856&RidingName=Arm-River&width=1100" />
+                </div>
+                </SwipeableViews>
             </div>
         </div>}
         </ReactModal>

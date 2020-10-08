@@ -4,7 +4,8 @@ import {
     ComposableMap,
     Geographies,
     Geography,
-    ZoomableGroup
+    ZoomableGroup,
+    Annotation
   } from "react-simple-maps";
   
 import { geoCentroid, geoBounds, geoPath, geoArea } from "d3-geo";
@@ -20,30 +21,36 @@ import ReactTooltip from 'react-tooltip'
 
 var prefix = process.env.NODE_ENV === 'development' ? './': "";  
 
-const geoUrl = `${prefix}data/SASK_Union_proj_lakes.json`
+const geoUrl = `${prefix}data/${process.env.PROV}_geo.json`
 // const saskUrl = '../data/'
 
 const styles = makeStyles({
     mapContainer: {
         height: '100%',
-        flex: 3,
-        backgroundColor: '#42515c'
+        flex: 4,
+        backgroundColor: '#42515c',
+        '& #yearLabel': {
+			// position: 'absolute',
+			
+		}
     }
 })
 
 const Map = (props) => {
     
+    const geoUrl = `${prefix}data/${props.prov}_geo.json`
+
+    
     const classes = styles()
     
-    const [zoomCenter, setZoomCenter] = useState({zoom: 12, center: [-105, 54]})
+    // const [zoomCenter, setZoomCenter] = useState({zoom: 12, center: [-90, 54]})
 
-
-    useEffect(() => {
-        // setTimeout(() => {
-        //     ReactTooltip.rebuild()
-        // }, 1000);        
-    }, [props.data])
-
+    useEffect(()=>{
+        setTimeout(() => {
+        ReactTooltip.rebuild()
+            
+        }, 1000);
+    },[])
 
     const getZoom = (area) => {
         var zoom = 4;
@@ -66,80 +73,98 @@ const Map = (props) => {
     }
 
     const handleClick = (el, center, zoom) => {
+
+        // console.log(el)
+
         if (props.clickable) {
             props.setDefaultState();
         }
         props.handleClick(el, center,zoom)
-        // setZoomCenter({zoom: zoom, center: center})
+        // setZoomCenter/({zoom: zoom, center: center})
     }
 
     const getFill = (geo) => {
+        // console.log('fill', geo)
         var fill = '#24323e'
-
-        if (props.data) { 
-            const contest = props.data.data.find(contest=>{
-                return contest.name === geo.Constituen
-            })
-            if (contest) {
-                var party = contest.results[0].partyCode
-                
-                var partyInfo = props.partyList.find(el=>{
-                    return el.nameShort === party    
+        try {
+            if (props.data && props.partyList) { 
+                const contest = props.data.data.find(contest=>{
+                    return contest.name === geo.Name
                 })
-                if (partyInfo) {
-                    fill = partyInfo.colour
+                // console.log(contest)
+                if (contest) {
+                    if (contest.results.length > 0) {
+                        if (contest.results[0].votes > 0 ) {
+                            if (contest.results[0].partyCode === "NDP") {
+                                return 'rgb(221, 102, 0)'
+                            }
+                            var party = contest.results[0].partyCode
+                            var partyInfo = props.partyList.find(el=>{
+                                return el.nameShort === party    
+                            })
+
+                            if (partyInfo.color) {
+
+                                fill = partyInfo.color
+                            }
+                            else fill = 'rgb(89, 91, 91)'
+                        }
+                        else fill = 'rgb(36, 50, 62)'
+                    }
                 }
-
-
-                else fill = '#24323e'
+            } else {
+                console.log("no data")
             }
+
+            return fill;
+
+        } catch(e) {
+            console.log("error getting fill")
+            fill = 'rgb(89, 91, 91)'
+            return fill;
         }
-
-        console.log(fill)
-
-        return fill;
+        
     }
     
 
     return (
         <div id="mapContainer" className={classes.mapContainer}>
+            
             <TransformComponent>
-                <ComposableMap style={{width: '100%', overflow: 'visible'}} projection="geoMercator" projectionConfig={{scale: 108}}>
+                
+            {/* <div id="yearLabel">{props.year}</div> */}
+
+                {props.zoomCenter && <ComposableMap style={{width: '100%', overflow: 'visible'}} projection="geoMercator" projectionConfig={{scale: 108}}>
+
                     <ZoomableGroup disablePanning disableZooming center={props.zoomCenter.center} zoom={props.zoomCenter.zoom}>
                         <Geographies geography={geoUrl}>
                             {({geographies}) =>
                                 geographies.map(geo=>{
                                     const centroid = geoCentroid(geo);
-                                    const area = geoArea(geo); 
                                     const zoom = getZoom(geoArea(geo));
                                     const fill = getFill(geo.properties);
-                                    var strokeWidth = 0.01
-                                    var ED = geo.properties.Constituen ? geo.properties.Constituen : undefined;
-
-                                    if (props.scale > 5 && strokeWidth <= 10) {
-                                        strokeWidth = 0.005
-                                    } else if (props.scale > 10) {
-                                        strokeWidth = 0.001
-                                    }
-
+                                    var strokeWidth = props.zoomCenter.zoom > 200 ? 0.005 : 0.01;
+                                    var ED = geo.properties.Name ? geo.properties.Name : undefined;
                                     return <Geography 
                                     key={geo.rsmKey}
                                     geography={geo}
                                     fill={fill}
                                     stroke="#EAEAEC"
-                                    opacity={(props.selected !== geo.properties.Constituen || !geo.properties.ConCode) ? 1 : 0.8}
-                                    id={geo.properties.Constituen}
-                                    strokeWidth={geo.properties.ConCode ? strokeWidth: 0.01}
-                                    onClick={()=>geo.properties.ConCode && handleClick(geo.properties.Constituen, centroid, zoom)}
-                                    data-tip={ED}
+                                    strokeWidth={0.001}
+                                    opacity={(props.selected !== geo.properties.Name || !geo.properties.Name) ? 1 : 0.8}
+                                    id={geo.properties.Name}
+                                    strokeWidth={strokeWidth}
+                                    onClick={()=>geo.properties.Name && handleClick(geo.properties.Name, centroid, zoom)}
+                                    data-tip={geo.properties.Name}
                                     center={centroid}
                                     zoom={zoom}
-                                    style={ geo.properties.ConCode ? {
+                                    style={ geo.properties.Name ? {
                                         default: {
-                                            outline: 'none'
+                                            outline: 'none',
                                         },
                                         pressed: {
-                                            outline: 'none'
+                                            outline: 'none',
+
                                         },
                                         hover: {
                                             opacity: 0.8,
@@ -163,11 +188,19 @@ const Map = (props) => {
                                 })
                             }
                         </Geographies>
+                        {props.config && <Annotation 
+                            connectorProps={{
+                                strokeWidth: 0
+                            }}
+                            subject={props.config.marker}>
+                            <text style={{fontSize: props.config.markerFont, backgroundColor: "rgb(161, 169, 170)"}} fill="white">
+                                {props.year}
+                            </text>
+                        </Annotation>}
                     </ZoomableGroup>
-                </ComposableMap>
+                </ComposableMap>}
             </TransformComponent>
-            {/* <ReactTooltip /> */}
-
+            <ReactTooltip />
         </div>
     )
 }
