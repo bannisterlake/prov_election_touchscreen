@@ -40,6 +40,7 @@ const styles = makeStyles({
         overflowX: 'hidden',
         zIndex: 10,
         flex: 5,
+        paddingBottom: 10,
         // height: '2500px';
         // // flex: 4, 
         // // position: 'relative',
@@ -73,10 +74,10 @@ const LocButton = styled(({ color, ...other }) => <Button {...other} />)({
     width:'100%',
     position: 'relative',
     color: 'white',
-    fontSize: 20,
+    fontSize: 28,
     letterSpacing: '1px',
     fontWeight: 'lighter',
-    height: 75,
+    minHeight: 100,
     padding: '0 30px',
 
     
@@ -95,7 +96,7 @@ const YearButton = styled(({ color, ...other }) => <Button {...other} />)({
         '#1d2732'
         : '#a1a9aa', 
     border: '1px solid #a1a9aa',      
-    fontSize: 20,
+    fontSize: 32,
     
     margin: '0 10px 10px 10px',    
     '&:hover':  {
@@ -167,9 +168,9 @@ const Sidebar = (props) => {
                     classNames="menu-primary"
                 >
                     <div className={"menu"}>
-                        <LocationButton value="" handleClick={handleRegionSelect}>All</LocationButton>
-                        {Object.keys(props.regionList).map(region=>{
-                            return <LocationButton value={region} handleClick={handleRegionSelect}>{region}</LocationButton>
+                        <LocationButton key="all" value="" handleClick={handleRegionSelect}>All</LocationButton>
+                        {Object.keys(props.regionList).map((region,i)=>{
+                            return <LocationButton key={`region-${i}`} value={region} handleClick={handleRegionSelect}>{region}</LocationButton>
                         })}
                         
                     </div>
@@ -182,7 +183,7 @@ const Sidebar = (props) => {
                 >
                     <div className={"menu"}>
 
-                    <LocationButton handleClick={()=>setMenu('region')}>Back</LocationButton>
+                    <LocationButton key="back" handleClick={()=>setMenu('region')}>Back</LocationButton>
                     {props.data && props.data.data.filter((ed)=>{
                         if (props.selectedRegion) {
                             let index = props.regionList[props.selectedRegion].EDList.findIndex(el=>el === ed.name)
@@ -198,7 +199,7 @@ const Sidebar = (props) => {
                     })
                     .map((el,i)=>{
                         return (
-                                <LocationButton i={i} handleClick={handleClick} selected={props.value === el.name} value={el.name} >{el.name}</LocationButton>
+                                <LocationButton key={`riding-${i}`} handleClick={handleClick} selected={props.value === el.name} value={el.name} >{el.name}</LocationButton>
                         )
                     })
                     }
@@ -207,10 +208,10 @@ const Sidebar = (props) => {
                 </CSSTransition>
             </div>
 
-            <div className={classes.yearContainer}>
+            {props.config && <div className={classes.yearContainer}>
                 <YearButton year="2020" onClick={()=>props.handleYear('2020')} clicked={props.year==='2020' ? 'true' : 'false'}>2020</YearButton>
-                <YearButton year="2018" onClick={()=>props.handleYear('2018')} clicked={props.year==='2018' ? 'true' : 'false'}>2018</YearButton>
-            </div>
+                <YearButton year={props.config.prevElectionYear} onClick={()=>props.handleYear(props.config.prevElectionYear)} clicked={props.year===props.config.prevElectionYear ? 'true' : 'false'}>{props.config.prevElectionYear}</YearButton>
+            </div>}
         </div>
     );
 }

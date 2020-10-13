@@ -3,6 +3,7 @@ import "./App.css";
 import {withStyles, makeStyles} from '@material-ui/core/styles';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import ReactTooltip from 'react-tooltip'
+import fetchJsonp from 'fetch-jsonp'
 
 //Components
 import Map from './components/Map';
@@ -206,7 +207,7 @@ const App = () => {
 				]
 			},
 			"Surrey & Delta": {
-				"zoomCenter": {zoom: 10, center: [-125, 55]},
+				"zoomCenter": {zoom: 230, center: [-123, 49.1]},
 				"EDList": [
 					"Delta North",
 					"Delta South",
@@ -222,7 +223,7 @@ const App = () => {
 				]
 			},
 			"Fraser Valley": {
-				"zoomCenter": {zoom: 10, center: [-125, 55]},
+				"zoomCenter": {zoom: 250, center: [-122.5, 49.3]},
 				"EDList": [
  					"Abbotsford-Mission",
 					"Abbotsford South",
@@ -234,7 +235,7 @@ const App = () => {
 				]
 			},
 			"Kootenays & Okanagan": {
-				"zoomCenter": {zoom: 10, center: [-125, 55]},
+				"zoomCenter": {zoom: 40, center: [-119, 51]},
 				"EDList": [
 					"Boundary-Similkameen",
 					"Columbia River-Revelstoke",
@@ -250,7 +251,7 @@ const App = () => {
 				]
 			},
 			"The North & Cariboo-Thompson": {
-				"zoomCenter": {zoom: 10, center: [-125, 55]},
+				"zoomCenter": {zoom: 16, center: [-128, 56]},
 				"EDList": [
 					"Cariboo-Chilcotin",
 					"Cariboo North",
@@ -268,7 +269,7 @@ const App = () => {
 				]
 			},
 			"Vancouver Island/Sunshine Coast": {
-				"zoomCenter": {zoom: 10, center: [-125, 55]},
+				"zoomCenter": {zoom: 40, center: [-126, 50]},
 				"EDList": [
 					"Courtenay-Comox",
 					"Cowichan Valley",
@@ -320,22 +321,42 @@ const App = () => {
 	useEffect(()=>{
 
 		if (config && prov) {
-			startTimer();
-			getData();
+			if (process.env.NODE_ENV === 'development' && config.database) {
+				console.log('get data from elector')
+				getDevData();
+				setInterval(()=>{
+					getDevData();
+				}, config.timer);
+			} else {
+				console.log('get data from local')
+				getProdData();
+				setInterval(()=>{
+					getProdData();
+				}, config.timer);
+			}
 			getStaticData();
 		}
 
 	},[config])
 
-	const startTimer = () => {
-		console.log("updating")
-		let remaining = counter
-		setInterval(()=>{
-				getData();
-		}, config.timer);
+	const getDevData = () => {
+		console.log('fetching')
+	
+		//full results
+		fetchJsonp(`${config.database}api/CandidateByRiding/?json=true`)
+			.then(res=>{
+				if (res.ok) {
+					return res.json();
+				}
+			})
+			.then(json=>{
+				setData(json)
+			})
+			.catch(err=>console.log(err))
+		
 	}
 
-	const getData = () => {
+	const getProdData = () => {
 		var prefix = process.env.NODE_ENV === 'development' ? './': "";
 	
 		console.log('fetching')

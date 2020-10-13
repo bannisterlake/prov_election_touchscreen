@@ -86,6 +86,7 @@ const Map = (props) => {
     const getFill = (geo) => {
         // console.log('fill', geo)
         var fill = '#24323e'
+        var opacity = 1
         try {
             if (props.data && props.partyList) { 
                 const contest = props.data.data.find(contest=>{
@@ -94,9 +95,13 @@ const Map = (props) => {
                 // console.log(contest)
                 if (contest) {
                     if (contest.results.length > 0) {
+                        if (contest.pollsReported/contest.pollsTotal < 0.15) {
+                            console.log('opacity')
+                            opacity = 0.5
+                        }
                         if (contest.results[0].votes > 0 ) {
                             if (contest.results[0].partyCode === "NDP") {
-                                return 'rgb(221, 102, 0)'
+                                return  {fill: 'rgb(221, 102, 0)', opacity: opacity};
                             }
                             var party = contest.results[0].partyCode
                             var partyInfo = props.partyList.find(el=>{
@@ -116,12 +121,12 @@ const Map = (props) => {
                 console.log("no data")
             }
 
-            return fill;
+            return {fill: fill, opacity: opacity};
 
         } catch(e) {
             console.log("error getting fill")
             fill = 'rgb(89, 91, 91)'
-            return fill;
+            return {fill: fill, opacity: opacity};
         }
         
     }
@@ -142,7 +147,8 @@ const Map = (props) => {
                                 geographies.map(geo=>{
                                     const centroid = geoCentroid(geo);
                                     const zoom = getZoom(geoArea(geo));
-                                    const fill = getFill(geo.properties);
+                                    const fillData = getFill(geo.properties);
+                                    const fill = fillData.fill
                                     var strokeWidth = props.zoomCenter.zoom > 200 ? 0.005 : 0.01;
                                     var ED = geo.properties.Name ? geo.properties.Name : undefined;
                                     return <Geography 
@@ -151,7 +157,7 @@ const Map = (props) => {
                                     fill={fill}
                                     stroke="#EAEAEC"
                                     strokeWidth={0.001}
-                                    opacity={(props.selected !== geo.properties.Name || !geo.properties.Name) ? 1 : 0.8}
+                                    opacity={(props.selected !== geo.properties.Name || !geo.properties.Name) ? fillData.opacity : 0.8}
                                     id={geo.properties.Name}
                                     strokeWidth={strokeWidth}
                                     onClick={()=>geo.properties.Name && handleClick(geo.properties.Name, centroid, zoom)}

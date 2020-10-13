@@ -31,7 +31,9 @@ const styles = makeStyles(props=>({
         overflowY: 'auto',
         outline: 'none',
         boxShadow: '2px 2px #1d1d1d81',
-        
+        '& svg': {
+          fontSize: '2rem'
+        }
 
       },
       modalContainer: {
@@ -72,7 +74,7 @@ const styles = makeStyles(props=>({
       modalTitle: {
           padding: 20,
           textAlign: 'center',
-          fontSize: 36
+          fontSize: 46
       },
       resultsContainer: {
         display: 'flex',
@@ -93,21 +95,21 @@ const styles = makeStyles(props=>({
         margin: 15,
         borderRadius: 5,
         display: 'flex',
-        height: 90,
+        height: 120,
       },
       imgDiv: {
         height: '100%',
         position: 'relative',
         backgroundColor: 'red',
         borderRadius: 5,
-        minWidth: props=>props.year === '2020' && 80,
+        // minWidth: props=>props.year === '2020' && 100,
         paddingLeft: props=>props.year !== '2020' && 10,
         // width: 'auto',
         '& img': {
             width: 0,
             transition: 'width 200ms',
             height: '100%',
-            marginLeft: 6,
+            marginLeft: 10,
             borderRadius: 5, 
         }
       },
@@ -118,13 +120,13 @@ const styles = makeStyles(props=>({
 
       },
       candidateInfo: {
-        flex: 3, 
+        flex: 4, 
         position: 'relative'
       }, 
       voteInfo: {
         flex: 2,
         display: 'flex',
-        fontSize: 24,
+        fontSize: 38,
         alignSelf: 'flex-end', 
         textAlign: 'right',
         paddingRight: 10
@@ -137,22 +139,23 @@ const styles = makeStyles(props=>({
       },
       partyName: {
           fontWeight: 'lighter',
-          fontSize: 18,
+          fontSize: 26,
           letterSpacing: 0.8
       },
       candidateName: {
-        fontSize: 30,
+        fontSize: 46,
         display: 'flex',  
         alignItems: 'baseline', 
         '& #incumbent': {
-          fontSize: 14,
+          fontSize: 24,
           paddingLeft: 10,
           fontStyle: 'italic'
         },
         '& #elected': {
           position: 'absolute', 
           right: 10,
-          bottom: -5
+          bottom: -5,
+
         }
       },
 
@@ -238,7 +241,7 @@ const ResultsModal = (props) => {
             <IconButton className={classes.closeButton} onClick={closeModal} ><CloseIcon /></IconButton>
             <div className={classes.modalBody}>
                 <div className={classes.modalTitle}>{props.data.name}</div>
-                <SwipeableViews> 
+                {/* <SwipeableViews>  */}
                 <div className={classes.resultsContainer}>
                   {/* {console.log(props.data.results)} */}
                     {props.data.results.map((contest,i)=>{
@@ -246,7 +249,7 @@ const ResultsModal = (props) => {
                         let partyDetails = getPartyInfo(contest.partyCode);
                         return (
                             <div key={i} className={classes.candidateContainer}>
-                                <div style={{backgroundColor: partyDetails.color}} className={classes.imgDiv}>{props.year === '2020' && <img onLoad={e=>{console.log(e.target.style.width);e.target.style.width = '74px'}} onError={(e) => { e.target.onError = null; e.target.src = `${prefix}img/no_headshot.png` } } src={getHeadshot(contest)}/>}</div>
+                                <div style={{backgroundColor: partyDetails.color}} className={classes.imgDiv}>{props.year === '2020' && <img onLoad={e=>{console.log(e.target.style.width);e.target.style.width = '100px'}} onError={(e) => { e.target.onError = null; e.target.src = `${prefix}img/no_headshot.png` } } src={getHeadshot(contest)}/>}</div>
                                 <div className={classes.resultsDiv}>
                                     <div className={classes.candidateDiv}>
                                         <div id="candidateInfo" className={classes.candidateInfo}>
@@ -271,10 +274,10 @@ const ResultsModal = (props) => {
                     })
                     }
                 </div>
-                <div className={classes.chartView}>
+                {/* <div className={classes.chartView}>
                   <img src="https://elector.blcloud.net/api/chart/VotePollPercent/?ridingID=856&RidingName=Arm-River&width=1100" />
-                </div>
-                </SwipeableViews>
+                // </div>
+                </SwipeableViews> */}
             </div>
         </div>}
         </ReactModal>
