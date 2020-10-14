@@ -1,0 +1,9 @@
+{
+    "timer": 100000,
+    "zoom": 14,
+    "center": [-125, 55],
+    "marker": [-154, 59],
+    "markerFont": 4,
+    "prevElectionYear": 2017,
+    "database": "https://elector02.blcloud.net/"
+}
