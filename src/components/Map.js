@@ -103,12 +103,14 @@ const Map = (props) => {
                             if (contest.results[0].partyCode === "NDP") {
                                 return  {fill: 'rgb(221, 102, 0)', opacity: opacity};
                             }
+                            if (contest.results[0].partyCode === "PC") {
+                                return  {fill: '#003399', opacity: opacity};
+                            }
                             var party = contest.results[0].partyCode
                             var partyInfo = props.partyList.find(el=>{
                                 return el.nameShort === party    
                             })
-
-                            if (partyInfo.color) {
+                            if (partyInfo) {
 
                                 fill = partyInfo.color
                             }
@@ -124,7 +126,7 @@ const Map = (props) => {
             return {fill: fill, opacity: opacity};
 
         } catch(e) {
-            console.log("error getting fill")
+            console.log("error getting fill", geo)
             fill = 'rgb(89, 91, 91)'
             return {fill: fill, opacity: opacity};
         }
@@ -206,7 +208,7 @@ const Map = (props) => {
                     </ZoomableGroup>
                 </ComposableMap>}
             </TransformComponent>
-            <ReactTooltip />
+            {/* <ReactTooltip /> */}
         </div>
     )
 }

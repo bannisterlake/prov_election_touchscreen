@@ -518,7 +518,8 @@ const App = () => {
 			</div>
 
 			<ResultsModal 
-				open={showModal} 
+				open={showModal}
+				config={config} 
 				year={year}
 				handleClose={()=>toggleModal(false)} 
 				data={selectedData}

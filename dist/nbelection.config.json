@@ -1,0 +1,9 @@
+{
+    "timer": 100000,
+    "zoom": 47,
+    "center": [-66, 46.2],
+    "marker": [-85.7, 55.5],
+    "markerFont": 1.15,
+    "prevElectionYear": 2016,
+    "database": ""
+}

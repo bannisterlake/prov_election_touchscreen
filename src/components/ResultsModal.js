@@ -61,8 +61,13 @@ const styles = makeStyles(props=>({
       },
       chartView: {
         margin: 10,
+        maxWidth: '99%',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        '& img': {
+          width: '100%',
+          height: '100%'
+        }
       },
       modalBody: {
           position: 'relative',
@@ -75,6 +80,10 @@ const styles = makeStyles(props=>({
           padding: 20,
           textAlign: 'center',
           fontSize: 46
+      },
+      pollInfo: {
+        textAlign: 'center',
+        fontSize: 24
       },
       resultsContainer: {
         display: 'flex',
@@ -197,6 +206,10 @@ const ResultsModal = (props) => {
           }
           return party 
         }
+        if (code === "PC") {
+          let party={ "name": "Progressive Conservative","color": '#003399'}
+          return party
+        }
         let party = props.partyList.find(parties=>{
             return parties.nameShort === code
         })
@@ -241,11 +254,12 @@ const ResultsModal = (props) => {
             <IconButton className={classes.closeButton} onClick={closeModal} ><CloseIcon /></IconButton>
             <div className={classes.modalBody}>
                 <div className={classes.modalTitle}>{props.data.name}</div>
-                {/* <SwipeableViews>  */}
+                <div className={classes.pollInfo}>{props.data.pollsReported} of {props.data.pollsTotal} polls reported</div>
+                <SwipeableViews disabled={props.year !== "2020"}> 
                 <div className={classes.resultsContainer}>
                   {/* {console.log(props.data.results)} */}
                     {props.data.results.map((contest,i)=>{
-                        console.log(contest)
+                        // console.log(contest)
                         let partyDetails = getPartyInfo(contest.partyCode);
                         return (
                             <div key={i} className={classes.candidateContainer}>
@@ -274,10 +288,10 @@ const ResultsModal = (props) => {
                     })
                     }
                 </div>
-                {/* <div className={classes.chartView}>
-                  <img src="https://elector.blcloud.net/api/chart/VotePollPercent/?ridingID=856&RidingName=Arm-River&width=1100" />
-                // </div>
-                </SwipeableViews> */}
+                {<div className={classes.chartView}>
+                  {(props.year === "2020" && process.env.NODE_ENV === 'development') && <img src={`${props.config.database}api/chart/VotePollPercent/?ridingID=${props.data.sysId}&RidingName=${props.data.name}&width=900&height=500`} />}
+                </div>}
+                </SwipeableViews>
             </div>
         </div>}
         </ReactModal>

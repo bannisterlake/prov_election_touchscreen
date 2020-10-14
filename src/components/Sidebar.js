@@ -119,6 +119,7 @@ const Sidebar = (props) => {
 
         const center = geo.getAttribute('center').split(',')
         const centerFloat = [parseFloat(center[0]),parseFloat(center[1])]
+        props.setDefaultState();
         props.handleClick(geo.getAttribute('id'), centerFloat, geo.getAttribute('zoom'))
     }
 
