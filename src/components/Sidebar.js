@@ -112,12 +112,14 @@ const Sidebar = (props) => {
 
     const classes = styles(props);
 
+
     const handleClick = (e) => {
         // props.setDefaultState();
         const geo = document.getElementById(e.currentTarget.value)
-        // console.log(geo)
+        console.log(e.currentTarget.value)
 
         const center = geo.getAttribute('center').split(',')
+        console.log('center', center)
         const centerFloat = [parseFloat(center[0]),parseFloat(center[1])]
         props.setDefaultState();
         props.handleClick(geo.getAttribute('id'), centerFloat, geo.getAttribute('zoom'))
