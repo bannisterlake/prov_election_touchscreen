@@ -116,7 +116,7 @@ const App = () => {
 		},
 		"bc": {
 			"Metro Vancouver": {
-				"zoomCenter": {zoom: 200, center: [-123, 49.3]},
+				"zoomCenter": {zoom: 400, center: [-123.0, 49.25]},
 				"EDList": [
 					"Burnaby-Deer Lake",
 					"Burnaby-Edmonds",
@@ -162,7 +162,7 @@ const App = () => {
 				]
 			},
 			"Vancouver": {
-				"zoomCenter": {zoom: 110, center: [-123, 49.9]},
+				"zoomCenter": {zoom: 950, center: [-123.13, 49.28]},
 				"EDList": [
 					"North Vancouver-Lonsdale",
 					"North Vancouver-Seymour",
@@ -182,7 +182,7 @@ const App = () => {
 				]
 			},
 			"Burnaby & Tri-Cities": {
-				"zoomCenter": {zoom: 240, center: [-122.8, 49.4]},
+				"zoomCenter": {zoom: 500, center: [-122.8, 49.25]},
 				"EDList": [
 					"Burnaby-Deer Lake",
 					"Burnaby-Edmonds",
@@ -198,7 +198,7 @@ const App = () => {
 				]
 			},
 			"Richmond": {
-				"zoomCenter": {zoom: 320, center: [-123.3, 49.2]},
+				"zoomCenter": {zoom: 650, center: [-123.05, 49.2]},
 				"EDList": [
 					"Richmond North Centre",
 					"Richmond-Queensborough",
@@ -207,7 +207,7 @@ const App = () => {
 				]
 			},
 			"Surrey & Delta": {
-				"zoomCenter": {zoom: 230, center: [-123, 49.1]},
+				"zoomCenter": {zoom: 500, center: [-122.9, 49.1]},
 				"EDList": [
 					"Delta North",
 					"Delta South",
@@ -223,7 +223,7 @@ const App = () => {
 				]
 			},
 			"Fraser Valley": {
-				"zoomCenter": {zoom: 250, center: [-122.5, 49.3]},
+				"zoomCenter": {zoom: 300, center: [-122.3, 49.3]},
 				"EDList": [
  					"Abbotsford-Mission",
 					"Abbotsford South",
@@ -235,7 +235,7 @@ const App = () => {
 				]
 			},
 			"Kootenays & Okanagan": {
-				"zoomCenter": {zoom: 40, center: [-119, 51]},
+				"zoomCenter": {zoom: 50, center: [-118.5, 50.8]},
 				"EDList": [
 					"Boundary-Similkameen",
 					"Columbia River-Revelstoke",
@@ -286,6 +286,17 @@ const App = () => {
 					"Saanich South",
 					"Victoria-Beacon Hill",
 					"Victoria-Swan Lake"
+				]
+			},
+			"Victoria": {
+				"zoomCenter": {zoom: 300, center: [-123.5, 48.5]},
+				"EDList": [
+					"Esquimalt-Metchosin", 
+					"Victoria-Beacon Hill", 
+					"Oak Bay-Gordon Head",
+					"Victoria-Swan Lake",
+					"Saanich South", 
+					"Saanich North and the Islands"
 				]
 			}
 		}
@@ -361,7 +372,7 @@ const App = () => {
 	
 		console.log('fetching')
 
-		fetch(`${prefix}data/${prov}_results.json`, {'cache': 'no-cache'})
+		fetch(`${prefix}data/${prov}_full_2020.json`, {'cache': 'no-cache'})
 			.then(res=>{
 				if (res.ok) {
 					return res.json();
@@ -378,7 +389,7 @@ const App = () => {
 		console.log('static')
 		var prefix = process.env.NODE_ENV === 'development' ? './': "";
 		// var prov = process.env
-		fetch(`${prefix}data/${prov}_results_prev.json`)
+		fetch(`${prefix}data/${prov}_full_prev.json`)
 			.then(res=>{
 				if (res.ok) {
 					return res.json();
